@@ -148,6 +148,22 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
     u = User(**{'nickanem': 'xxxx', 'email': 'xxxx@xx.com'})
     u.save()
     print u.uid
+    
+使用事务：
+
+	with haredb.get_tx() as tx:
+		try:
+			 save_user(...)
+		except:
+			logging.error(format_exc())
+			tx.rollback()
+		else:
+			tx.commit()
+
+ 使用事务装饰器：	
+ 
+	haredb.tx(save_user)(...)
+
 
 #### 2. 获取一条记录
 
@@ -168,9 +184,35 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
 
     # 每个元素是个dict
     users = User.select_many(nickname='xxxx', email='xxx')
+    
+#### 6. raw sql查询
 
-#### 6. 分页:
+	sql = """...."""
+	haredb.dbi.select(sql, (...))
+	haredb.dbi.select_many(sql, (...))
+	haredb.dbi.modify(sql, (...))
+	haredb.dbi.select_many(sql, (...))
+
+#### 7. 分页:
 
     # 获取nickname中包含9的第一页的10条记录
     # 每个元素是个dict
     pagination = User.paginate(params={'nickname': ('like', '9')}, page=1, per_page=10)
+    
+也可以直接调用``paginate(...)``：
+
+	from hare import paginate
+	
+	sql = """...."""
+	# 模糊匹配"abc"的的列
+	params = {"column-name":  ("LIKE", "abc")}
+
+	pagination = paginate(haredb.dbi, sql, params,  1, 10)
+	
+## API
+
+见
+
+	doc/api.md
+
+	
