@@ -107,12 +107,7 @@ Model对象的数据，是一个dict，存放字段和对应的值；``data``中
 名称 | 类型 | 用途
 ----|------|----
 ret_columns | string list | 希望返回的主键列表，为None时，返回所有的字段
-params | dict | 查询条件，如：{
-                    "column-1": (">=", value-1)
-                    "column-2": ("LIKE", value-2)
-                    "column-3": ("BETWEEN", (value-3-1, values-3-2)),
-                    ...
-                }， 合法的操作符是： {'=', 'LIKE', '>=', '>', '<', '<=', 'IS', 'IN', 'BETWEEN', 'IS NOT'}
+params | dict | 查询条件，如：{"column-1": (">=", value-1),"column-2": ("LIKE", value-2),"column-3": ("BETWEEN", (value-3-1, values-3-2)),               ...   }， 合法的操作符是： {'=', 'LIKE', '>=', '>', '<', '<=', 'IS', 'IN', 'BETWEEN', 'IS NOT'}
 page | int | 
 
 ## hare.Connection

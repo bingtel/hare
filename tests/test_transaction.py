@@ -2,7 +2,7 @@ import logging
 from traceback import format_exc
 
 from . import haredb, User
-from ..hare import HareException
+from hare import HareException
 
 
 def save_user(fail=False):

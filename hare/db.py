@@ -2,6 +2,8 @@
 from threading import local
 from functools import wraps
 
+import pymysql
+
 from .table import Model, Table
 from .transaction import Transaction
 from .column import Column
@@ -13,13 +15,23 @@ class Hare(object):
     """DataSource, just a database
     """
 
-    def __init__(self, **kwds):
+    def __init__(self, host=None, user=None,
+                 password=None, db=None,
+                 charset='utf8',
+                 cursorclass=pymysql.cursors.DictCursor):
         self._tables = {}
-        self.db_conf = kwds
+        self.db_conf = {
+            'host': host,
+            'user': user,
+            'password': password,
+            'db': db,
+            'charset': charset,
+            'cursorclass': cursorclass
+        }
         # transaction manger
         self.tx_manager = local()
-        self._conn = Connection(**kwds)
-        self.name = kwds['db']
+        self._conn = Connection(**self.db_conf)
+        self.name = db
         self._conn.ping()
 
     def table(self, table_name=None):

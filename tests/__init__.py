@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 import pymysql
-from ..hare import Hare, Model
+from hare import Hare, Model
 
 
 USER_TABLE = """CREATE TABLE `user` (
