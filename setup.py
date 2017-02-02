@@ -4,7 +4,7 @@ with open('README.md') as f:
     long_description = f.read()
 
 setup(name='hare',
-      version='0.1',
+      version='0.2',
       description='A python ORM based on pymysql with ActiveRecord',
       long_description=long_description,
       keywords='python ORM orm ActiveRecord pymysql raw sql',

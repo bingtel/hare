@@ -143,90 +143,110 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
 
 那么:
 
-#### 1. 添加记录
-创建一个User对象并保存：
+### 完整的用例如下
 
-    u = User()
-    u.set_many(**{'nickanem': 'xxxx', 'email': 'xxxx@xx.com'}).save()
-    print u.uid
+	#! -*- coding: utf-8 -*-
+	from __future__ import absolute_import
+	import logging
+	from traceback import format_exc
+	import pymysql
+	from hare import Hare, Model
 
-或者：
+	# 创建一个Hare对象, 作为数据源
+	haredb = Hare(
+	    host='localhost', user='root',
+	    password='135246', db='test',
+	    charset='utf8',
+	    cursorclass=pymysql.cursors.DictCursor)
 
-    u = User(**{'nickanem': 'xxxx', 'email': 'xxxx@xx.com'})
-    u.save()
-    print u.uid
-    
-使用事务：
+	# 将user表和User类绑定
+	@haredb.table('user')
+	class User(Model):
+	    pass
+	    
+	# 获取所有的表名
+	# 返回['user']
+	print haredb.tables
+
+	 
+	# 获取User类对应的table对象
+	table = User.table
+
+	# 输出表名称
+	print table.name
+
+	# 清空User表
+	table.truncate()
+
+	# 判断字段是否属于该表
+	print table.is_column('uid')
+	print table.is_column('uid_not_exists')
+
+	# 新建一条记录
+	u = User()
+	u.set_many(**{'nickname': 'haha', 'email': 'a@q.com'}).save()
+
+	# 获取主键
+	print u.uid
+
+	# 获取一条记录
+	u = User.get(uid=1)
+
+	# 修改字段的值
+	u.nickname = 'new name'
+	u.update()
+
+	# 删除该对象
+	u.delete()
+
+	# 获取所有的用户记录
+	# 每个元素是个dict
+	users = User.select_many()
+
+	# 查询符合条件的所有记录
+	# 每个元素是个dict
+	users = User.select_many(email='a@q.com')
+
+	# 分页查询User表
+	pagination = User.paginate(params={'nickname': ('is not', None)}, page=1, per_page=10)
+	print pagination.items
+
+	# 获取一条数据库连接
+	dbi = haredb.dbi
+
+	# 执行row sql
+	# 一条记录
+	users = dbi.select(u'SELECT * FROM user WHERE uid = 10')
+	# 多条记录
+	users = dbi.select_many(u'SELECT * FROM user WHERE uid > 10')
+	# 执行写操作
+	dbi.modify(u'DELETE FROM user WHERE uid = %s', 1)
+	# 批量写操作
+	rows = [{'nickname': 'test', 'email': 'test@qq.com'}]
+	dbi.modify_many(u'INSERT INTO user(nickname, email) VALUES(%(nickname)s, %(email)s)', rows)
+
+	# 执行事务
+	@haredb.tx
+	def save_user():
+	    user = User().set_many(**{'nickname': 'test2'})
+	    user.save()
+	    # 1/0 取消注释该行，则保存失败
+	    
+	# 执行事务的另外一种方式
+	def save_user2():
+	    user = User().set_many(**{'nickname': 'test2'})
+	    user.save()
+	    # 1/0 取消注释该行，则保存失败
 
 	with haredb.get_tx() as tx:
-		try:
-			 save_user(...)
-		except:
-			logging.error(format_exc())
-			tx.rollback()
-		else:
-			tx.commit()
-
- 使用事务装饰器：	
- 
- 	@haredb.tx
- 	def save_user(...):
- 		pass
-
-
-#### 2. 获取一条记录
-
-    u = User.get(uid=1)
-    print u.nickname, u.email, u.uid
-
-#### 3. 更新:
-
-    u = User.get(uid=1)
-    u.email = 'ooooo@qq.com'
-    u.update()
-    
-或者：
-
-    u = User.get(uid=1)
-    u.set_many(**{'email': 'ooooo@qq.com'})
-    u.update()
-
-#### 4. 删除对象
-
-    u.delete()
-
-#### 5. 查询多条记录
-
-    # 每个元素是个dict
-    users = User.select_many(nickname='xxxx', email='xxx')
-    
-#### 6. 执行raw sql
-
-	sql = """...."""
-	# 返回最多一个结果
-	haredb.dbi.select(sql, (...))
-	# 返回一个或多个结果
-	haredb.dbi.select_many(sql, (...))
-	# 执行delete、update等
-	haredb.dbi.modify(sql, (...))
-	# 执行批量插入等
-	haredb.dbi.modify_many(sql, (...))
-
-#### 7. 分页:
-
-    # 获取nickname中包含9的第一页的10条记录
-    # 每个元素是个dict
-    pagination = User.paginate(params={'nickname': ('like', '9')}, page=1, per_page=10)
-    
-也可以直接调用``paginate(...)``：
-
-	from hare import paginate
-	
-	sql = """...."""
-	# 模糊匹配"abc"的的列
-	params = {"column-name":  ("LIKE", "abc")}
-
-	pagination = paginate(haredb.dbi, sql, params,  1, 10)
+	    try:
+		save_user2()
+	    except:
+		logging.error(format_exc())
+		tx.rollback()
+	    else:
+		tx.commit()
+	print User.select_many()
 	
 ## API
 
