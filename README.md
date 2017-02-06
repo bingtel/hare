@@ -120,9 +120,9 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
 用户提供数据库的连接配置，就对应了一个数据源，也就是Database；
 
 	haredb = Hare(
-		host='localhost', user='root',
-              	password='135246', db='test',
-              	charset='utf8')
+	        host='localhost', user='root',
+	        password='********', db='test',
+	        charset='utf8')
 
 假设在``test``数据库中已经创建了一个``user``表：
 
@@ -237,12 +237,12 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
 
 	with haredb.get_tx() as tx:
 	    try:
-		save_user2()
+	        save_user2()
 	    except:
-		logging.error(format_exc())
-		tx.rollback()
+	        logging.error(format_exc())
+	        tx.rollback()
 	    else:
-		tx.commit()
+	        tx.commit()
 	print User.select_many()
 	
 ## API
