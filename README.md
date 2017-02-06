@@ -90,8 +90,7 @@ Hare中， 采用类似方式，通过：
 
     haredb = Hare(host='localhost', user='root',
               password='*****', db='test',
-              charset='utf8',
-              cursorclass=pymysql.cursors.DictCursor)
+              charset='utf8')
 
 来创建一个数据源对象， 存放数据操作所需的一切信息。
 ##### 装饰器
@@ -123,8 +122,7 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
 	haredb = Hare(
 		host='localhost', user='root',
               	password='135246', db='test',
-              	charset='utf8',
-              	cursorclass=pymysql.cursors.DictCursor)
+              	charset='utf8')
 
 假设在``test``数据库中已经创建了一个``user``表：
 
@@ -156,8 +154,7 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
 	haredb = Hare(
 	    host='localhost', user='root',
 	    password='********', db='test',
-	    charset='utf8',
-	    cursorclass=pymysql.cursors.DictCursor)
+	    charset='utf8')
 
 	# 将user表和User类绑定
 	@haredb.table('user')
