@@ -17,8 +17,7 @@ class Hare(object):
 
     def __init__(self, host=None, user=None,
                  password=None, db=None,
-                 charset='utf8',
-                 cursorclass=pymysql.cursors.DictCursor):
+                 charset='utf8'):
         self._tables = {}
         self.db_conf = {
             'host': host,
@@ -26,7 +25,7 @@ class Hare(object):
             'password': password,
             'db': db,
             'charset': charset,
-            'cursorclass': cursorclass
+            'cursorclass': pymysql.cursors.DictCursor
         }
         # transaction manger
         self.tx_manager = local()

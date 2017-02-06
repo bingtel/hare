@@ -82,7 +82,7 @@ class Model(object):
     def __getattr__(self, item):
         if item in self.data:
             return self.data[item]
-        raise AttributeError
+        return super(Model, self).__getattribute__(item)
 
     def __setattr__(self, key, value):
         if key in self.table.columns:

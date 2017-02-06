@@ -12,8 +12,7 @@ USER_TABLE = """CREATE TABLE `user` (
 
 haredb = Hare(host='localhost', user='root',
               password='135246', db='test',
-              charset='utf8',
-              cursorclass=pymysql.cursors.DictCursor)
+              charset='utf8')
 
 
 @haredb.table('user')
