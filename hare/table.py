@@ -47,7 +47,7 @@ class Table(object):
         """truncate this table
         :return:
         """
-        sql = """TRUNCATE TABLE `{0}`""".format(self.name)
+        sql = u"""TRUNCATE TABLE `{0}`""".format(self.name)
         self.hare.dbi.modify(sql)
 
 
@@ -115,7 +115,7 @@ class Model(object):
 
     def save(self):
         columns = u', '.join(self._modified)
-        values = u', '.join(['%({0})s'.format(k) for k in self._modified])
+        values = u', '.join([u'%({0})s'.format(k) for k in self._modified])
         sql = u"""INSERT INTO `{table}`({columns})
                   VALUES({values})""".format(
                       table=self.table.name, columns=columns, values=values)
@@ -134,14 +134,14 @@ class Model(object):
     def update(self):
         table = self.table
         if not table.primary_keys:
-            raise HareException("Table '%s' has not primary key" % self.table)
+            raise HareException(u"Table '%s' has not primary key" % self.table)
         conds = []
         for key in table.primary_keys:
             if self.data[key]:
                 conds.append(u"{key} = %({key})s".format(key=key))
         if not conds:
             raise HareException(
-                "Primary keys of table '%s' are None value" % self.table)
+                u"Primary keys of table '%s' are None value" % self.table)
         slices = [u"{key} = %({key})s".format(
             key=key) for key in self._modified]
         if not slices:
@@ -159,7 +159,7 @@ class Model(object):
     def delete(self):
         table = self.table
         if not table.primary_keys:
-            raise HareException("Table '%s' has not primary key" % self.table)
+            raise HareException(u"Table '%s' has not primary key" % self.table)
         conds = []
         for key in table.primary_keys:
             if self.data[key]:
@@ -206,7 +206,8 @@ class Model(object):
         return rows
 
     @classmethod
-    def paginate(cls, ret_columns=None, params=None, page=1, per_page=10, pageable=True):
+    def paginate(cls, ret_columns=None, params=None, page=1, per_page=10,
+                 pageable=True):
         """pagination for this table
         :param ret_columns: columns selected
         :param params: query conditions, like: {
@@ -230,6 +231,6 @@ class Model(object):
             for col in ret_columns:
                 cls._check_column(col)
         cols = ', '.join(ret_columns)
-        sql = """SELECT {0} FROM `{1}`""".format(cols, cls.table.name)
+        sql = u"""SELECT {0} FROM `{1}`""".format(cols, cls.table.name)
         dbi = cls.table.hare.dbi
         return paginate(dbi, sql, params, page, per_page)

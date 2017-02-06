@@ -12,7 +12,7 @@ class Pagination(object):
         self.per_page = per_page
 
     def __str__(self):
-        return ("Pagination<pages: {0.pages}, page: {0.page}, "
+        return (u"Pagination<pages: {0.pages}, page: {0.page}, "
                 "total: {0.total}, per_page: {0.per_page}, "
                 "items: {0.items}>".format(self))
 
@@ -78,21 +78,21 @@ def paginate(dbi, sql, params=None, page=-1, per_page=10):
             if op == 'IN':
                 elements = []
                 for i, e in enumerate(val):
-                    tmp_key = '%({0}-{1})s'.format(k, i)
-                    elements.append(['%({0})s'.format(tmp_key)])
+                    tmp_key = u'%({0}-{1})s'.format(k, i)
+                    elements.append([u'%({0})s'.format(tmp_key)])
                     kvs[tmp_key] = e
                 conds.append(u"{0} IN ({1})".format(k, ', '.join(elements)))
             elif op == 'BETWEEN':
-                kvs["{0}-1".format(k)] = val[0]
-                kvs["{0}-2".format(k)] = val[-1]
+                kvs[u"{0}-1".format(k)] = val[0]
+                kvs[u"{0}-2".format(k)] = val[-1]
                 conds.append(u'{0} BETWEEN %({0}-1)s AND %({0}-2)s'.format(k))
             elif op == 'LIKE':
-                kvs[k] = "%{0}%".format(val)
+                kvs[k] = u"%{0}%".format(val)
                 conds.append(u"{0} LIKE %({0})s".format(k))
             else:
                 kvs[k] = val
                 conds.append(u'{0} {1} %({0})s'.format(k, op))
-        slices = ' AND '.join(conds)
+        slices = u' AND '.join(conds)
         cnt_sql = u"""SELECT COUNT(*) AS cnt
                       FROM ({0} WHERE {1}) AS T""".format(sql, slices)
         sql = u"{0} WHERE {1}".format(sql, slices)

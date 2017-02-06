@@ -42,7 +42,7 @@ class Hare(object):
     def _add_table(self, table_name, cls):
         if not issubclass(cls, Model):
             raise HareException(
-                "Class: %s should derive from 'Model'" % cls.__name__)
+                u"Class: %s should derive from 'Model'" % cls.__name__)
         table = self._get_table(table_name)
         cls.table = table
         self._tables[table_name] = cls
@@ -58,7 +58,7 @@ class Hare(object):
         return Table(self, table_name, rows)
 
     def _get_table_metadata(self, table_name):
-        sql = """SELECT COLUMN_NAME AS column_name,
+        sql = u"""SELECT COLUMN_NAME AS column_name,
                      ORDINAL_POSITION As ordinal_position,
                      COLUMN_DEFAULT AS column_default,
                      IS_NULLABLE AS is_nullable,
