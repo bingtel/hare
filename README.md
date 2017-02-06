@@ -155,7 +155,7 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
 	# 创建一个Hare对象, 作为数据源
 	haredb = Hare(
 	    host='localhost', user='root',
-	    password='135246', db='test',
+	    password='********', db='test',
 	    charset='utf8',
 	    cursorclass=pymysql.cursors.DictCursor)
 
