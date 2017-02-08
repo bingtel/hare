@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import logging
-
 import pymysql
 
 
 class Connection(object):
     """DB Connection
     """
-    def __init__(self, autocommit=True, **db_conf):
-        self._conn = pymysql.connect(**db_conf)
+    def __init__(self, hare_db, autocommit=True):
+        self._db = hare_db
+        self._conn = pymysql.connect(**self._db.db_conf)
         self._conn.autocommit(autocommit)
         self._cursor = self._conn.cursor()
 
@@ -22,9 +21,9 @@ class Connection(object):
     def autocommit(self, autocommit):
         self._conn.autocommit(autocommit)
 
-    @staticmethod
-    def _do_execute(sql, args, func, log_level=logging.INFO):
-        logging.log(log_level, sql, args)
+    def _do_execute(self, sql, args, func):
+        log_level = self._db.logger.getEffectiveLevel()
+        self._db.logger.log(log_level, "%s ; args = %s" % (sql, args))
         affected = func(sql, args)
         return affected
 

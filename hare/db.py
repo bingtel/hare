@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from threading import local
 from functools import wraps
+import logging
 
 import pymysql
 
@@ -17,7 +18,29 @@ class Hare(object):
 
     def __init__(self, host=None, user=None,
                  password=None, db=None,
-                 charset='utf8'):
+                 charset='utf8', logger=None):
+        """
+        :param host: database host
+        :param user: database username
+        :param password: database password for access
+        :param db: database name
+        :param charset:
+        :param logger: a logger to log the sql executed, egg.:
+            ```
+            logger = logging.getLogger('haredb')
+            logger.addHandler(logging.StreamHandler())
+            logger.setLevel(logging.INFO)
+            ```
+            `logger` should have set log level by `setLevel(logging.XXXX)`,
+            otherwise, default log level `WARNING` will be used.
+
+            if no `logger` is provided, a default logger will be user:
+            ```
+            logger = logging.getLogger(__name__)
+            logger.addHandler(logging.StreamHandler())
+            logger.setLevel(logging.DEBUG)
+            ```
+        """
         self._tables = {}
         self.db_conf = {
             'host': host,
@@ -27,16 +50,22 @@ class Hare(object):
             'charset': charset,
             'cursorclass': pymysql.cursors.DictCursor
         }
-        # transaction manger
+        # transaction manager
         self.tx_manager = local()
-        self._conn = Connection(**self.db_conf)
+        if not logger:
+            logger = logging.getLogger(__name__)
+            logger.addHandler(logging.StreamHandler())
+            logger.setLevel(logging.DEBUG)
+        self.logger = logger
         self.name = db
+        self._conn = Connection(self)
         self._conn.ping()
 
     def table(self, table_name=None):
         def decorator(cls):
             self._add_table(table_name, cls)
             return cls
+
         return decorator
 
     def _add_table(self, table_name, cls):
@@ -122,6 +151,7 @@ class Hare(object):
                 else:
                     tx.commit()
                     return ret
+
         return wrapper
 
     @property
@@ -132,9 +162,9 @@ class Hare(object):
         try:
             tx = self.tx_manager.tx
         except AttributeError:
-            return Connection(**self.db_conf)
+            return Connection(self)
         else:
-            return tx.get_connection() if tx else Connection(**self.db_conf)
+            return tx.get_connection() if tx else Connection(self)
 
     @dbi.setter
     def dbi(self, val):

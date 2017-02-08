@@ -1,6 +1,10 @@
 from __future__ import absolute_import
-import pymysql
+import logging
 from hare import Hare, Model
+
+logger = logging.getLogger('hare')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
 
 
 USER_TABLE = """CREATE TABLE `user` (
@@ -12,7 +16,7 @@ USER_TABLE = """CREATE TABLE `user` (
 
 haredb = Hare(host='localhost', user='root',
               password='135246', db='test',
-              charset='utf8')
+              charset='utf8', logger=logger)
 
 
 @haredb.table('user')

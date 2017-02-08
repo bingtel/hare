@@ -2,7 +2,7 @@
 
 """Nested transaction is not implemented now.
 """
-import logging
+from traceback import format_exc
 from .connection import Connection
 from .exception import HareException
 
@@ -12,8 +12,7 @@ class Transaction(object):
     """
     def __init__(self, hare):
         self.hare = hare
-        self._conn = Connection(autocommit=False,
-                                **self.hare.db_conf)
+        self._conn = Connection(self.hare, autocommit=False)
         self._dirty = True
 
     def __enter__(self):
@@ -22,7 +21,7 @@ class Transaction(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type:
-            logging.error(exc_type, exc_val, exc_tb)
+            self.hare.logger.error(format_exc())
         if self._dirty:
             self.rollback()
             raise HareException(
