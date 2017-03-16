@@ -37,7 +37,7 @@ _VALIDATORS = {
 }
 
 
-def paginate(dbi, sql, params=None, page=-1, per_page=10):
+def paginate(dbi, sql, params=None, page=-1, per_page=10, order_by=None):
     """pagination query
     :param dbi: connection
     :param sql:
@@ -58,9 +58,12 @@ def paginate(dbi, sql, params=None, page=-1, per_page=10):
     if per_page < 0 or page < 0:
         raise HareException('page_size or cur_page can not be minus')
     kvs = {}
+    order_by = 'ORDER BY {}'.format(order_by) if order_by else ''
     if not params:
         cnt_sql = u"""SELECT COUNT(*) AS cnt
                       FROM ({0}) AS T""".format(sql)
+        if order_by:
+            cnt_sql += ' ORDER BY {}'.format(order_by)
         cnt = dbi.select(cnt_sql)['cnt']
     else:
         conds = []
@@ -94,8 +97,12 @@ def paginate(dbi, sql, params=None, page=-1, per_page=10):
                 conds.append(u'{0} {1} %({0})s'.format(k, op))
         slices = u' AND '.join(conds)
         cnt_sql = u"""SELECT COUNT(*) AS cnt
-                      FROM ({0} WHERE {1}) AS T""".format(sql, slices)
+                      FROM ({0} WHERE {1}) AS T""".format(
+            sql, slices)
         sql = u"{0} WHERE {1}".format(sql, slices)
+        if order_by:
+            cnt_sql += ' {}'.format(order_by)
+            sql += ' {}'.format(order_by)
         cnt = dbi.select(cnt_sql, kvs)['cnt']
     if not cnt or not per_page:
         return Pagination([], 0, page, per_page, 0)

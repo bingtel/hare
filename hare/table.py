@@ -207,7 +207,7 @@ class Model(object):
 
     @classmethod
     def paginate(cls, ret_columns=None, params=None, page=1, per_page=10,
-                 pageable=True):
+                 order_by=None, pageable=True):
         """pagination for this table
         :param ret_columns: columns selected
         :param params: query conditions, like: {
@@ -233,4 +233,4 @@ class Model(object):
         cols = ', '.join(ret_columns)
         sql = u"""SELECT {0} FROM `{1}`""".format(cols, cls.table.name)
         dbi = cls.table.hare.dbi
-        return paginate(dbi, sql, params, page, per_page)
+        return paginate(dbi, sql, params, page, per_page, order_by)

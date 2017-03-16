@@ -109,17 +109,23 @@ def test_paginate():
     pagination = User.paginate(params={'uid': ('<=', 10)}, page=1, per_page=10)
     assert len(pagination.items) == pagination.per_page
 
-    pagination = User.paginate(params={'nickname': ('like', '9')}, page=1, per_page=10)
+    pagination = User.paginate(
+        params={'nickname': ('like', '9')}, page=1, per_page=10)
     assert len(pagination.items) == pagination.per_page
 
-    pagination = User.paginate(params={'nickname': ('is', None)}, page=1, per_page=10)
+    pagination = User.paginate(
+        params={'nickname': ('is', None)}, page=1, per_page=10,
+        order_by='uid DESC')
     assert len(pagination.items) == 0
 
-    pagination = User.paginate(params={'nickname': ('is not', None)}, page=1, per_page=10)
+    pagination = User.paginate(
+        params={'nickname': ('is not', None)}, page=1, per_page=10)
     assert len(pagination.items) == 10
 
-    pagination = User.paginate(params={'nickname': ('  is not  ', None)}, page=1, per_page=10)
+    pagination = User.paginate(
+        params={'nickname': ('  is not  ', None)}, page=1, per_page=10)
     assert len(pagination.items) == 10
 
-    pagination = User.paginate(params={'nickname': ('like', '999')}, page=1, per_page=10)
+    pagination = User.paginate(
+        params={'nickname': ('like', '999')}, page=1, per_page=10)
     assert len(pagination.items) == 0
