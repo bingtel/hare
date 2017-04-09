@@ -103,7 +103,7 @@ flask中，使用装饰器的方式，来定义路由处理：
 Hare也使用装饰器来定义定义数据模型类和表之间的映射关系，并存储， 如下：
 
     @haredb.table('user')
-    class User(Model):
+    class User(haredb.Model):
         pass
 
 把``User``类和``user``表对应起来.
@@ -136,7 +136,7 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
 通过``装饰器``来声明这个数据库下有哪些表(添加一个名是``user``的table，对应的模型是``User``)：
 
     @haredb.table('user')
-    class User(Model):
+    class User(haredb.Model):
         pass
 
 那么:
@@ -147,8 +147,7 @@ Hare也使用装饰器来定义定义数据模型类和表之间的映射关系�
 from __future__ import absolute_import
 import logging
 from traceback import format_exc
-import pymysql
-from hare import Hare, Model
+from hare import Hare
 
 # 创建一个Hare对象, 作为数据源
 # 会使用默认的logger来记录执行的sql
@@ -169,7 +168,7 @@ haredb = Hare(
 
 # 将user表和User类绑定
 @haredb.table('user')
-class User(Model):
+class User(haredb.Model):
     pass
     
 # 获取所有的表名
