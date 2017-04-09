@@ -185,6 +185,20 @@ class Model(object):
         return obj
 
     @classmethod
+    def get_or_404(cls, err_msg='this record not exists', **kwds):
+        """get a row with **kwds, same as `get(**kwds)`;
+        while if row not exists, HareException with `err_msg` raised.
+        :param err_msg:
+            default is 'this record not exists'
+        :param kwds:
+        :return:
+        """
+        obj = cls.get(**kwds)
+        if not obj:
+            raise HareException(err_msg)
+        return obj
+
+    @classmethod
     def select_many(cls, cols=None, **kwds):
         table = cls.table
         if not cols:

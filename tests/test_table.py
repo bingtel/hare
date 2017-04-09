@@ -1,6 +1,8 @@
+#! -*- coding: utf-8 -*-
+
 import pytest
 
-from . import User, UserRole
+from . import User
 from hare import HareException
 
 
@@ -40,6 +42,22 @@ def test_truncate():
     assert len(User.select_many()) == 1
     User.table.truncate()
     assert len(User.select_many()) == 0
+
+
+def test_get_or_404():
+    try:
+        User.get_or_404(uid=1)
+    except HareException as he_err:
+        assert unicode(he_err) == u'this record not exists'
+    else:
+        assert False
+
+    try:
+        User.get_or_404(err_msg=u'该用户不存在', uid=1)
+    except HareException as he_err:
+        assert unicode(he_err) == u'该用户不存在'
+    else:
+        assert False
 
 
 def test_save():
