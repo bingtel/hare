@@ -60,6 +60,7 @@ class Hare(object):
         self.name = db
         self._conn = Connection(self)
         self._conn.ping()
+        self.Model = Model
 
     def table(self, table_name=None):
         def decorator(cls):
@@ -69,7 +70,7 @@ class Hare(object):
         return decorator
 
     def _add_table(self, table_name, cls):
-        if not issubclass(cls, Model):
+        if not issubclass(cls, self.Model):
             raise HareException(
                 u"Class: %s should derive from 'Model'" % cls.__name__)
         table = self._get_table(table_name)

@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import logging
-from hare import Hare, Model
+from hare import Hare
 
 logger = logging.getLogger('hare')
 logger.addHandler(logging.StreamHandler())
@@ -20,10 +20,10 @@ haredb = Hare(host='localhost', user='root',
 
 
 @haredb.table('user')
-class User(Model):
+class User(haredb.Model):
     pass
 
 
 @haredb.table('user_role')
-class UserRole(Model):
+class UserRole(haredb.Model):
     pass
