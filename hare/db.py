@@ -75,7 +75,6 @@ class Hare(object):
                 u"Class: %s should derive from 'Model'" % cls.__name__)
         table = self._get_table(table_name)
         cls.table = table
-        self._tables[table_name] = cls
 
     def _get_table(self, table_name):
         if table_name not in self._tables:
